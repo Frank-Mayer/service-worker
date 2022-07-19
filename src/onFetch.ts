@@ -13,11 +13,9 @@ export const onFetch = (ev: FetchEvent) =>
     const url = new URL(ev.request.url);
     const fullUrl = url.origin + url.pathname;
     let done = false;
-    console.debug("fetching", fullUrl);
 
     const timeoutId = setTimeout(() => {
       if (!done) {
-        console.debug("fetching timeout", fullUrl);
         reject(new Error("fetching timeout"));
       }
     }, 10000);
@@ -32,7 +30,6 @@ export const onFetch = (ev: FetchEvent) =>
               done = true;
               clearTimeout(timeoutId);
               resolve(cachedResponse);
-              console.debug("cache hit", fullUrl);
             }
           })
           .catch((err) => {
@@ -45,7 +42,6 @@ export const onFetch = (ev: FetchEvent) =>
               done = true;
               clearTimeout(timeoutId);
               resolve(response.clone());
-              console.debug("from network (cloned)", fullUrl);
             }
           });
         } else {
@@ -61,7 +57,6 @@ export const onFetch = (ev: FetchEvent) =>
               done = true;
               clearTimeout(timeoutId);
               resolve(networkResponse);
-              console.debug("from network", fullUrl);
             }
             cache.put(fullUrl, networkResponse.clone());
             currentlyFetching.delete(fullUrl);
