@@ -73,6 +73,7 @@ typings/
 
 # parcel build output
 dist/
+*.js
 
 # next.js build output
 .next
