@@ -1,7 +1,7 @@
 {
   "name": "@frank-mayer/service-worker",
   "packageManager": "yarn@3.2.0",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Frank-Mayer",
     "email": "mail@frank-mayer.io"
@@ -9,7 +9,8 @@
   "license": "MIT",
   "main": "./index.js",
   "scripts": {
-    "build": "parcel build src/index.ts --no-source-maps"
+    "build": "parcel build src/index.ts --no-source-maps",
+    "deploy": "yarn build && yarn npm publish --access public"
   },
   "devDependencies": {
     "@types/service_worker_api": "^0.0.9",
