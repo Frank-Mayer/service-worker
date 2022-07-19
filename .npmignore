@@ -1,3 +1,11 @@
+# Editor
+.vscode
+.editorconfig
+
+# Git
+.gitignore
+.gitattributes
+
 # Logs
 logs
 *.log
@@ -63,6 +71,13 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
+# Yarn Config
+.yarnrc.yml
+
+# Lock Files
+yarn.lock
+package-lock.json
+
 # dotenv environment variables file
 .env
 .env.test
@@ -70,18 +85,6 @@ typings/
 # parcel-bundler cache (https://parceljs.org/)
 .parcel-cache
 .cache
-
-# parcel build output
-dist/
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
 
 # Serverless directories
 .serverless/
@@ -91,3 +94,7 @@ dist/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Source
+src/
+tsconfig.json
