@@ -36,31 +36,35 @@ export const onFetch = (ev: FetchEvent) =>
             console.error(err);
           });
 
-        if (currentlyFetching.has(fullUrl)) {
-          currentlyFetching.get(fullUrl)!.then((response) => {
-            if (!done) {
-              done = true;
-              clearTimeout(timeoutId);
-              resolve(response.clone());
-            }
-          });
-        } else {
-          const fetchPromise = fetch(fullUrl, {
-            method: ev.request.method,
-            headers: ev.request.headers,
-            body: ev.request.body,
-            redirect: "follow",
-          } as RequestInit);
-          currentlyFetching.set(fullUrl, fetchPromise);
-          fetchPromise.then((networkResponse) => {
-            if (!done) {
-              done = true;
-              clearTimeout(timeoutId);
-              resolve(networkResponse);
-            }
-            cache.put(fullUrl, networkResponse.clone());
-            currentlyFetching.delete(fullUrl);
-          });
+        if (navigator.onLine) {
+          if (currentlyFetching.has(fullUrl)) {
+            currentlyFetching.get(fullUrl)!.then((response) => {
+              if (!done) {
+                done = true;
+                clearTimeout(timeoutId);
+                resolve(response.clone());
+              }
+            });
+          } else {
+            const fetchPromise = fetch(fullUrl, {
+              method: ev.request.method,
+              headers: ev.request.headers,
+              body: ev.request.body,
+              redirect: "follow",
+            } as RequestInit);
+            currentlyFetching.set(fullUrl, fetchPromise);
+            fetchPromise.then((networkResponse) => {
+              if (!done) {
+                done = true;
+                clearTimeout(timeoutId);
+                resolve(networkResponse);
+              }
+              if (networkResponse.ok) {
+                cache.put(fullUrl, networkResponse.clone());
+              }
+              currentlyFetching.delete(fullUrl);
+            });
+          }
         }
       })
       .catch(reject);
