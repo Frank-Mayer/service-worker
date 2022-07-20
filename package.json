@@ -1,7 +1,7 @@
 {
   "name": "@frank-mayer/service-worker",
   "packageManager": "yarn@3.2.0",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Frank-Mayer",
     "email": "mail@frank-mayer.io"
