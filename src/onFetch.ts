@@ -9,14 +9,14 @@ const cacheMatchOptionsSameOrigin: CacheOptions = {
 
 /** stale while revalidate */
 export const onFetch = (ev: FetchEvent) =>
-  new Promise<Response>(async (resolve, reject) => {
+  new Promise<Response>(async (resolve) => {
     const url = new URL(ev.request.url);
     const fullUrl = url.origin + url.pathname;
     let done = false;
 
     const timeoutId = setTimeout(() => {
       if (!done) {
-        reject(new Error("fetching timeout"));
+        resolve(new Response("Network Timeout", { status: 503 }));
       }
     }, 10000);
 
@@ -26,10 +26,16 @@ export const onFetch = (ev: FetchEvent) =>
         cache
           .match(fullUrl, cacheMatchOptionsSameOrigin)
           .then((cachedResponse) => {
-            if (cachedResponse && !done) {
-              done = true;
-              clearTimeout(timeoutId);
-              resolve(cachedResponse);
+            if (!done) {
+              if (cachedResponse) {
+                done = true;
+                clearTimeout(timeoutId);
+                resolve(cachedResponse);
+              } else if (!navigator.onLine) {
+                done = true;
+                clearTimeout(timeoutId);
+                resolve(new Response("Service Unavailable", { status: 503 }));
+              }
             }
           })
           .catch((err) => {
@@ -67,5 +73,17 @@ export const onFetch = (ev: FetchEvent) =>
           }
         }
       })
-      .catch(reject);
+      .catch((err) => {
+        const message =
+          typeof err === "string"
+            ? err
+            : "message" in err
+            ? err.message
+            : "name" in err
+            ? err.name
+            : "toString" in err
+            ? err.toString()
+            : err;
+        resolve(new Response(message, { status: 500 }));
+      });
   });
