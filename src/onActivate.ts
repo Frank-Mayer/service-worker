@@ -8,4 +8,6 @@ export const onActivate = async () => {
       .filter((cacheName) => cacheName !== CACHE_NAME)
       .map((cacheName) => caches.delete(cacheName))
   );
+
+  return self.clients.claim();
 };
