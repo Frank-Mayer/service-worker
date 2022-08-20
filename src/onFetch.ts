@@ -57,6 +57,7 @@ export const onFetch = (ev: FetchEvent) =>
               headers: ev.request.headers,
               body: ev.request.body,
               redirect: "follow",
+              cache: "reload",
             } as RequestInit);
             currentlyFetching.set(fullUrl, fetchPromise);
             fetchPromise.then((networkResponse) => {
