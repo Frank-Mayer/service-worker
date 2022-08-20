@@ -1,7 +1,6 @@
 {
   "name": "@frank-mayer/service-worker",
-  "packageManager": "yarn@3.2.0",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "author": {
     "name": "Frank-Mayer",
     "email": "mail@frank-mayer.io"
@@ -10,14 +9,14 @@
   "main": "./index.js",
   "scripts": {
     "build": "parcel build src/index.ts --no-source-maps",
-    "deploy": "yarn build && yarn npm publish --access public"
+    "deploy": "npm build && npm publish --access public"
   },
   "devDependencies": {
     "@types/service_worker_api": "^0.0.9",
-    "parcel": "^2.6.2",
+    "parcel": "^2.7.0",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@parcel/service-worker": "^2.6.2"
+    "@parcel/service-worker": "^2.7.0"
   }
 }
