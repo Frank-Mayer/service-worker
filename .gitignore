@@ -6,7 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# Bun
+# Lockfiles
+package-lock.json
+yarn.lock
 bun.lockb
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
