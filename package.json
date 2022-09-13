@@ -1,6 +1,6 @@
 {
   "name": "@frank-mayer/service-worker",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "author": {
     "name": "Frank-Mayer",
     "email": "mail@frank-mayer.io"
@@ -9,7 +9,7 @@
   "main": "./index.js",
   "scripts": {
     "build": "parcel build src/index.ts --no-source-maps",
-    "deploy": "npm build && npm publish --access public"
+    "deploy": "npm run build && npm publish --access public"
   },
   "devDependencies": {
     "@types/service_worker_api": "^0.0.9",
