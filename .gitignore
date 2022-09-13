@@ -79,6 +79,7 @@ typings/
 # parcel build output
 dist/
 *.js
+!/client.js
 
 # next.js build output
 .next
