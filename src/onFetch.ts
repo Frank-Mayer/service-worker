@@ -67,19 +67,20 @@ export const onFetch = (ev: FetchEvent) =>
                 done = true;
                 clearTimeout(timeoutId);
                 resolve(networkResponse);
+                if (networkResponse.ok) {
+                  if (cacheUpdatedTimer) {
+                    clearTimeout(cacheUpdatedTimer);
+                  }
+                  cacheUpdatedTimer = setTimeout(() => {
+                    CHANNEL.postMessage({
+                      from: "@frank-mayer/service-worker",
+                      type: "cache-updated",
+                    });
+                  }, 1000);
+                }
               }
               if (networkResponse.ok) {
                 cache.put(fullUrl, networkResponse.clone());
-
-                if (cacheUpdatedTimer) {
-                  clearTimeout(cacheUpdatedTimer);
-                }
-                cacheUpdatedTimer = setTimeout(() => {
-                  CHANNEL.postMessage({
-                    from: "@frank-mayer/service-worker",
-                    type: "cache-updated",
-                  });
-                }, 1000);
               }
               currentlyFetching.delete(fullUrl);
             });
