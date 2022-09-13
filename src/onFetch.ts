@@ -1,4 +1,4 @@
-import { CACHE_NAME } from "./globals";
+import { CACHE_NAME, CHANNEL } from "./globals";
 
 const currentlyFetching = new Map<string, Promise<Response>>();
 
@@ -6,6 +6,8 @@ const cacheMatchOptionsSameOrigin: CacheOptions = {
   ignoreSearch: true,
   ignoreMethod: true,
 };
+
+let cacheUpdatedTimer: number | null = null;
 
 /** stale while revalidate */
 export const onFetch = (ev: FetchEvent) =>
@@ -68,6 +70,16 @@ export const onFetch = (ev: FetchEvent) =>
               }
               if (networkResponse.ok) {
                 cache.put(fullUrl, networkResponse.clone());
+
+                if (cacheUpdatedTimer) {
+                  clearTimeout(cacheUpdatedTimer);
+                }
+                cacheUpdatedTimer = setTimeout(() => {
+                  CHANNEL.postMessage({
+                    from: "@frank-mayer/service-worker",
+                    type: "cache-updated",
+                  });
+                }, 1000);
               }
               currentlyFetching.delete(fullUrl);
             });
