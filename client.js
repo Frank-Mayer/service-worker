@@ -1,3 +1,6 @@
+/**
+ * Notification channel for the Service Worker.
+ */
 export const CHANNEL = new BroadcastChannel("@frank-mayer/service-worker");
 
 /**
