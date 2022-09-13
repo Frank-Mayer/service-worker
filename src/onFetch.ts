@@ -12,6 +12,7 @@ let cacheUpdatedTimer: number | null = null;
 /** stale while revalidate */
 export const onFetch = (ev: FetchEvent) =>
   new Promise<Response>(async (resolve) => {
+    let cacheContent: string | null = null;
     const url = new URL(ev.request.url);
     const fullUrl = url.origin + url.pathname;
     let done = false;
@@ -33,6 +34,12 @@ export const onFetch = (ev: FetchEvent) =>
                 done = true;
                 clearTimeout(timeoutId);
                 resolve(cachedResponse);
+                cachedResponse
+                  .clone()
+                  .text()
+                  .then((cachedResponseText) => {
+                    cacheContent = cachedResponseText;
+                  });
               } else if (!navigator.onLine) {
                 done = true;
                 clearTimeout(timeoutId);
@@ -67,22 +74,31 @@ export const onFetch = (ev: FetchEvent) =>
                 done = true;
                 clearTimeout(timeoutId);
                 resolve(networkResponse);
-                if (networkResponse.ok) {
-                  if (cacheUpdatedTimer) {
-                    clearTimeout(cacheUpdatedTimer);
-                  }
-                  cacheUpdatedTimer = setTimeout(() => {
-                    CHANNEL.postMessage({
-                      from: "@frank-mayer/service-worker",
-                      type: "cache-updated",
-                    });
-                  }, 1000);
-                }
               }
               if (networkResponse.ok) {
                 cache.put(fullUrl, networkResponse.clone());
               }
               currentlyFetching.delete(fullUrl);
+
+              networkResponse
+                .clone()
+                .text()
+                .then((networkResponseText) => {
+                  if (
+                    cacheContent !== null &&
+                    cacheContent !== networkResponseText
+                  ) {
+                    if (cacheUpdatedTimer) {
+                      clearTimeout(cacheUpdatedTimer);
+                    }
+                    cacheUpdatedTimer = setTimeout(() => {
+                      CHANNEL.postMessage({
+                        from: "@frank-mayer/service-worker",
+                        type: "cache-updated",
+                      });
+                    }, 1000);
+                  }
+                });
             });
           }
         }
