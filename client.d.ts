@@ -14,7 +14,9 @@ export const onServiceWorkerCacheUpdated: (callback: () => void) => void;
  * @param {Array<string>} resources - The resources to preload.
  * @returns Promise that resolves when the service worker has been notified.
  */
-export const preloadResources: (resources: Array<string>) => Promise<void>;
+export const serviceWorkerPreloadResources: (
+  resources: Array<string>
+) => Promise<void>;
 
 /**
  * Notify the service worker to clear the cache.
