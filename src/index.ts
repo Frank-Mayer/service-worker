@@ -8,6 +8,10 @@ self.addEventListener("install", (ev: InstallEvent) => {
   ev.waitUntil(onInstall().then(() => self.skipWaiting()));
 });
 
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
 self.addEventListener("fetch", (ev: FetchEvent) => {
   try {
     if (!ev.request.url.startsWith(self.location.origin)) {

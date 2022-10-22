@@ -17,12 +17,14 @@ export const onFetch = (ev: FetchEvent) =>
     const fullUrl = url.origin + url.pathname;
     let done = false;
 
+    // timeout after 10 seconds
     const timeoutId = setTimeout(() => {
       if (!done) {
         resolve(new Response("Network Timeout", { status: 503 }));
       }
     }, 10000);
 
+    // try to get the content from the cache
     caches
       .open(CACHE_NAME)
       .then((cache) => {
@@ -51,7 +53,9 @@ export const onFetch = (ev: FetchEvent) =>
             console.error(err);
           });
 
+        // try to get the content from the network
         if (navigator.onLine) {
+          // if we are already fetching the content, wait for the other fetch to finish
           if (currentlyFetching.has(fullUrl)) {
             currentlyFetching.get(fullUrl)!.then((response) => {
               if (!done) {
@@ -61,6 +65,7 @@ export const onFetch = (ev: FetchEvent) =>
               }
             });
           } else {
+            // fetch the content from the network
             const fetchPromise = fetch(fullUrl, {
               method: ev.request.method,
               headers: ev.request.headers,
@@ -88,6 +93,7 @@ export const onFetch = (ev: FetchEvent) =>
                     cacheContent !== null &&
                     cacheContent !== networkResponseText
                   ) {
+                    // notify the client that the cache has been updated
                     if (cacheUpdatedTimer) {
                       clearTimeout(cacheUpdatedTimer);
                     }
@@ -96,7 +102,7 @@ export const onFetch = (ev: FetchEvent) =>
                         from: "@frank-mayer/service-worker",
                         type: "cache-updated",
                       });
-                    }, 1000);
+                    }, 3000);
                   }
                 });
             });
@@ -104,6 +110,7 @@ export const onFetch = (ev: FetchEvent) =>
         }
       })
       .catch((err) => {
+        // on error, return internal server error
         const message =
           typeof err === "string"
             ? err
@@ -117,3 +124,18 @@ export const onFetch = (ev: FetchEvent) =>
         resolve(new Response(message, { status: 500 }));
       });
   });
+
+CHANNEL.addEventListener("message", async (ev) => {
+  if (
+    ev.data.from === "@frank-mayer/service-worker/client" &&
+    ev.data.type === "clear-cache"
+  ) {
+    await caches.delete(CACHE_NAME);
+    await self.clients.claim();
+
+    CHANNEL.postMessage({
+      from: "@frank-mayer/service-worker",
+      type: "clear-cache",
+    });
+  }
+});
